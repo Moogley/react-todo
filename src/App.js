@@ -37,6 +37,14 @@ function App() {
       setTodos(newTodos)
     }
 
+    function toggleAll() {
+      const newTodos = [...todos]
+      const checked = () => {newTodos.forEach(todo => todo.complete = true); setTodos(newTodos)}
+      const unchecked = () => {newTodos.forEach(todo => todo.complete = false); setTodos(newTodos)}
+      const toggle = newTodos.some(todo => todo.complete === false) ? checked : unchecked;
+      toggle()
+    }
+
     // uses the useRef() hook to reference the text currently typed into the input field with todoNameRef and sets the value to name
     // if it's blank, we return to break the function, else we setTodos. prevTodos is the current list
     // prevTodos gets returned with the new todo as the next value on the end. id is set randomly with uuidv4
@@ -47,6 +55,14 @@ function App() {
         return[...prevTodos, { id: uuidv4(), name: name, complete: false }]
       })
       todoNameRef.current.value = null
+      todoNameRef.current.focus()
+    }
+
+    function enterPressed(e) {
+      if (todoNameRef.current.value === '') return
+      if (e.charCode === 13) {
+        handleAddTodo()
+      }
     }
 
     // pretty self-explanatory
@@ -55,14 +71,25 @@ function App() {
       setTodos(newTodos)
     }
 
+    
+
   return (
     <div className="App">
-    
-      <Todos todos={todos} toggleTodo={toggleTodo} /> 
-      <input ref={todoNameRef} type="text" />
-      <button onClick={handleAddTodo}>Add Todo</button>
-      <button onClick={handleClearTodos}>Clear Completed Todos</button>
-      <div> {todos.filter(todo => !todo.complete).length} left to go</div>
+
+      <div className="Side">
+        <h1>To-Do List</h1>
+        <div> {todos.filter(todo => !todo.complete).length} left to go</div>
+        <hr style={{width: '100%'}} />
+        <input ref={todoNameRef} type="text" onKeyPress={enterPressed}/>
+        <button onClick={handleAddTodo}>Add To-Do</button>
+        <button onClick={handleClearTodos}>Clear Completed To-Do's</button>
+        <button onClick={toggleAll}>Select All</button>
+      </div>
+
+      <div className="Todos">
+        <Todos todos={todos} toggleTodo={toggleTodo} /> 
+      </div>
+      
     </div>
   );
 }
